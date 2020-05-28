@@ -6,7 +6,7 @@ by S. Rump et al., 2016"
 
 NO WARRANTY for correctness of the results.
 
-## Features:
+## Key points:
 - constant rounding mode, so no switching necessary (speed-up)
 - double as end points throughout
 - basic operations as direct function calls
