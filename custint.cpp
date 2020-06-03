@@ -234,14 +234,31 @@ int32_t custSub_ZAB(
 
 	// it is assumed that res is not the same object as A or B
 
-	// [a0..a1] - [b0..b1] = [a0..a1] + [-b1..-b0]
+	// [aL..aR] - [bL..bR] = [aL-bR..aR-bL]
 	
-	CustInterval mB;
-	mB.left=-B.right; // no rounding
-	mB.right=-B.left; // no rounding
+	// left end: simulates downwards rounding by
+	// consecutive negation (see articel by S.Rump)
+	// aL -DOWN bR = -( (-aL) UP- (-bR) )
+	double a1=A.left;  a1=-a1; // no rounding occurs
+	double b1=B.right; b1=-b1; // no rounding occurs
 	
-	return custAdd_ZAB(res,A,mB);
-	// already corrected for subnormals
+	// ROUNDING upwards
+	res.left=a1-b1; 
+	
+	res.left=-res.left; // no rounding
+	// now the result is DOWNWARD-rounded A.left-B.right
+	
+	// right end-point: uses upward rounding
+	res.right=A.right-B.left;
+	
+	// if result is subnormal => enlarge interval or
+	// return error value -1 if infinity or NaN
+	IAVALIDATE_LEFT(res.left);
+	IAVALIDATE_RIGHT(res.right);
+	
+	// everything worked, valid interval in variable res
+	return 0;
+
 }
 
 int32_t custMul_ZAB(
